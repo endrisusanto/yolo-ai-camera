@@ -108,7 +108,7 @@ load_known_faces()
 
 # Global state
 settings = {
-    "fps_limit": 30,
+    "fps_limit": 60,
     "mode": "fast",
     "conf_threshold": 0.25
 }
@@ -124,7 +124,24 @@ next_person_id = 0
 recognized_faces = {}  # Store recognized faces with their names
 
 
+
 camera = cv2.VideoCapture(0)
+
+def apply_low_light_enhancement(frame):
+    """Enhance image for low light conditions using CLAHE"""
+    # Convert to LAB color space
+    lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+    l, a, b = cv2.split(lab)
+    
+    # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) to L-channel
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+    cl = clahe.apply(l)
+    
+    # Merge and convert back to BGR
+    limg = cv2.merge((cl,a,b))
+    enhanced = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+    return enhanced
+
 
 def get_local_time():
     """Get current time in GMT+7"""
@@ -275,6 +292,10 @@ def check_sitting_advanced(keypoints, chairs_boxes):
             sitting_score += 1
     
     if sitting_score >= 2:
+        # If pose strongly suggests sitting, we don't strictly need a chair
+        return "Sitting", knee_angle
+    elif sitting_score >= 1:
+        # If pose is ambiguous, check for chair
         if hip_x > 0 and hip_y > 0:
             for chair_box in chairs_boxes:
                 x1, y1, x2, y2 = chair_box
@@ -349,6 +370,9 @@ def generate_frames():
             
         prev_time = time.time()
         
+        # Apply low light enhancement
+        frame = apply_low_light_enhancement(frame)
+        
         conf = settings["conf_threshold"]
         
         # Optimized YOLO inference - smaller resolution (416 instead of 640)
@@ -363,26 +387,41 @@ def generate_frames():
         
         chairs_boxes = []
         phone_detected = False
-        phone_with_head_down = False
+        
+        # Expanded detection details
+        detected_objects = []
         
         if results_seg[0].boxes is not None:
             for box in results_seg[0].boxes:
                 cls_id = int(box.cls[0])
                 xyxy = box.xyxy[0].cpu().numpy()
+                conf_score = float(box.conf[0])
                 
+                # 56: Chair, 67: Cell phone, 63: Laptop, 41: Cup, 73: Book
                 if cls_id == 56:
                     chairs_boxes.append(xyxy)
                 elif cls_id == 67:
                     phone_detected = True
+                    detected_objects.append("Phone")
+                elif cls_id == 63:
+                    detected_objects.append("Laptop")
+                elif cls_id == 41:
+                    detected_objects.append("Cup")
+                elif cls_id == 73:
+                    detected_objects.append("Book")
         
-        if phone_detected and results_pose[0].keypoints is not None:
+        # Check for head down pose (increased sensitivity)
+        head_down_detected = False
+        
+        if results_pose[0].keypoints is not None:
             for kps in results_pose[0].keypoints.data:
                 kps_np = kps.cpu().numpy()
                 if check_head_down(kps_np):
-                    phone_with_head_down = True
+                    head_down_detected = True
                     break
         
-        if phone_with_head_down:
+        # Capture logic: Phone detected OR Head down (Suspected)
+        if head_down_detected:
             current_time = time.time()
             if current_time - last_capture_time > CAPTURE_COOLDOWN:
                 local_time = get_local_time()
@@ -394,14 +433,23 @@ def generate_frames():
                 filepath = os.path.join(CAPTURE_FOLDER, filename)
                 cv2.imwrite(filepath, annotated_frame)
                 
+                # Determine alert type
+                alert_type = "Phone Usage" if phone_detected else "Suspected Phone Use"
+                description = "Person detected using phone" if phone_detected else "Head down pose detected (Suspected phone use)"
+                
+                # Add context about other objects
+                if detected_objects:
+                    unique_objs = list(set([o for o in detected_objects if o != "Phone"]))
+                    if unique_objs:
+                        description += f" near {', '.join(unique_objs)}"
+                
                 # Save to database
                 conn = sqlite3.connect(DATABASE_FILE)
                 cursor = conn.cursor()
                 cursor.execute('''
                     INSERT INTO phone_alerts (filename, timestamp, date, type, description)
                     VALUES (?, ?, ?, ?, ?)
-                ''', (filename, timestamp_display, date_display, "Phone Usage", 
-                      "Person detected using phone with head down"))
+                ''', (filename, timestamp_display, date_display, alert_type, description))
                 conn.commit()
                 conn.close()
                 
@@ -411,8 +459,8 @@ def generate_frames():
                     "filename": filename,
                     "timestamp": timestamp_display,
                     "date": date_display,
-                    "type": "Phone Usage",
-                    "description": "Person detected using phone with head down"
+                    "type": alert_type,
+                    "description": description
                 })
                 if len(captures) > 100:
                     captures.pop()
@@ -423,6 +471,9 @@ def generate_frames():
         frame_count += 1
         generate_frames.frame_count = frame_count
         
+        # Get persistent face results
+        face_results = getattr(generate_frames, 'face_results', [])
+        
         if len(known_face_encodings) > 0 and frame_count % 3 == 0:
             # Convert BGR to RGB for face_recognition
             rgb_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
@@ -432,6 +483,9 @@ def generate_frames():
             
             # Find faces in frame (use faster HOG model)
             face_locations = face_recognition.face_locations(small_frame, model="hog")
+            
+            # Prepare new results list
+            new_results = []
             
             # Only get encodings if faces found
             if len(face_locations) > 0:
@@ -456,13 +510,21 @@ def generate_frames():
                         if matches[best_match_index]:
                             name = known_face_names[best_match_index]
                     
-                    # Draw rectangle around face
-                    cv2.rectangle(annotated_frame, (left, top), (right, bottom), (0, 255, 0), 2)
-                    
-                    # Draw name label
-                    cv2.rectangle(annotated_frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
-                    cv2.putText(annotated_frame, name, (left + 6, bottom - 6), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+                    new_results.append((top, right, bottom, left, name))
+            
+            # Update persistent results (clears if no faces found)
+            face_results = new_results
+            generate_frames.face_results = face_results
+
+        # Draw faces from persistent results (every frame)
+        for (top, right, bottom, left, name) in face_results:
+            # Draw rectangle around face
+            cv2.rectangle(annotated_frame, (left, top), (right, bottom), (0, 255, 0), 2)
+            
+            # Draw name label
+            cv2.rectangle(annotated_frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+            cv2.putText(annotated_frame, name, (left + 6, bottom - 6), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
         
         current_time = time.time()
         active_person_ids = set()
@@ -705,6 +767,36 @@ def update_settings():
         settings['mode'] = data['mode']
         settings['conf_threshold'] = 0.35 if data['mode'] == 'accurate' else 0.25
     return jsonify({"status": "success", "settings": settings})
+
+@app.route('/api/reset_db', methods=['POST'])
+def reset_db():
+    try:
+        # Clear database tables
+        conn = sqlite3.connect(DATABASE_FILE)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM phone_alerts')
+        cursor.execute('DELETE FROM sitting_sessions')
+        conn.commit()
+        conn.close()
+        
+        # Clear captures folder
+        for filename in os.listdir(CAPTURE_FOLDER):
+            file_path = os.path.join(CAPTURE_FOLDER, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(f'Failed to delete {file_path}. Reason: {e}')
+                
+        # Clear in-memory lists
+        global captures, sitting_sessions, sitting_history
+        captures = []
+        sitting_sessions = {}
+        sitting_history = []
+        
+        return jsonify({"status": "success", "message": "Database and captures reset successfully"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/captures/<path:filename>')
 def serve_capture(filename):

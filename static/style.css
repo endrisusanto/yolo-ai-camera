@@ -316,21 +316,26 @@ body.light-theme .control-btn:hover {
 .carousel-container {
     position: absolute;
     bottom: 20px;
-    left: 0;
-    right: 0;
-    padding: 0 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1000px;
     animation: slideUp 0.5s ease;
+
+    /* Fade effect on edges */
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
 @keyframes slideUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translate(-50%, 20px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, 0);
     }
 }
 
@@ -338,13 +343,21 @@ body.light-theme .control-btn:hover {
     display: flex;
     gap: 12px;
     overflow-x: auto;
-    padding: 8px 0;
+    padding: 20px 40px;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    width: 100%;
 }
 
 .carousel-scroll::-webkit-scrollbar {
     display: none;
+}
+
+/* Spacer to ensure centering works with flexbox scroll */
+.carousel-scroll::before,
+.carousel-scroll::after {
+    content: '';
+    flex: 0 0 10px;
 }
 
 .alert-card {

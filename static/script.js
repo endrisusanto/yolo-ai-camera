@@ -65,6 +65,24 @@ function closeSettings() {
     document.getElementById('settings-modal').classList.remove('active');
 }
 
+function resetDatabase() {
+    if (confirm('Are you sure you want to delete all data and captures? This action cannot be undone.')) {
+        fetch('/api/reset_db', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Database and captures have been reset.');
+                    location.reload();
+                } else {
+                    alert('Error resetting database: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+}
+
 function viewImage(filename, timestamp) {
     const modal = document.getElementById('image-modal');
     const modalImage = document.getElementById('modal-image');
