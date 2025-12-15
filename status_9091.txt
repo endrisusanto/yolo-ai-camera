@@ -1,0 +1,12 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0   0     0   0     0     0     0  --:--:-- --:--:-- --:--:--     0  0     0   0     0   0     0     0     0  --:--:-- --:--:-- --:--:--     0
+HTTP/1.1 200 OK
+Content-Type: text/html
+Date: Mon, 15 Dec 2025 01:24:17 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+dbf867143588   yolo-frontend                                  "docker-entrypoint.s…"   2 days ago     Up 2 days     0.0.0.0:5173->5173/tcp, [::]:5173->5173/tcp                                          yolo-frontend-1
+cc9a6441200b   yolo-backend                                   "uvicorn main:app --…"   2 days ago     Up 2 days     0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                                          yolo-backend-1
+3fb6ac353efe   postgres:15-alpine                             "docker-entrypoint.s…"   2 days ago     Up 2 days     0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp                                          yolo-db-1

@@ -1,0 +1,21 @@
+--- Curl Body Head ---
+<!doctype html>
+<html>
+  <body style="margin: 0">
+    <style>
+					body {
+						--codeium-chat-background: #f3f3f3;
+						--codeium-editor-background: #ffffff;
+						--codeium-editor-color: #000000;
+						--codeium-text-color: #616161;
+						--codeium-link-color: #006ab1;
+						--codeium-link-hover-color: #006ab1;
+						--codeium-caption-color: rgb(180, 180, 180);
+						--codeium-message-block-user-background: #0060c0;
+						--codeium-message-block-user-color: #ffffff;
+						--codeium-message-block-bot-background: #e4e6f1;
+						--codeium-message-block-bot-color: #616161;
+						--codeium-input-color: #616161;
+						--codeium-input-placeholder: #767676;
+						--codeium-input-background: #ffffff;
+						--codeium-tooltip-background: #e4e6f1;

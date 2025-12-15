@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="dark-theme">
+    <!-- Fullscreen Video -->
+    <div class="video-background">
+        <img src="/video_feed" alt="AI Camera Feed" id="camera-feed">
+    </div>
+
+    <!-- Alert Flash Effect -->
+    <div class="alert-flash" id="alert-flash">
+        <div class="alert-icon">🚨</div>
+        <div class="alert-text">PHONE DETECTED</div>
+    </div>
+
+    <!-- Overlay UI -->
+    <div class="overlay-container">
+        <!-- Side Menu -->
+        <nav class="side-menu glass">
+            <a href="/" class="menu-item active" title="Live Monitor">
+                <span class="menu-icon">📹</span>
+            </a>
+            <a href="/dashboard" class="menu-item" title="Dashboard">
+                <span class="menu-icon">📊</span>
+            </a>
+        </nav>
+
+        <!-- Top Right Controls -->
+        <div class="top-controls">
+            <!-- Stats Badge -->
+            <div class="stats-badge glass">
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-fps">0</span>
+                    <span class="stat-label">FPS</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-sitting">0</span>
+                    <span class="stat-label">Sitting</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-alerts">0</span>
+                    <span class="stat-label">Alerts</span>
+                </div>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <button class="control-btn glass" onclick="toggleTheme()" id="theme-btn" title="Toggle Theme">
+                🌙
+            </button>
+
+            <!-- Settings Button -->
+            <button class="control-btn glass" onclick="openSettings()" title="Settings">
+                ⚙️
+            </button>
+        </div>
+
+        <!-- Bottom Carousel -->
+        <div class="carousel-container">
+            <div class="carousel-scroll" id="alerts-list">
+                <div class="empty-msg">No alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal" onclick="closeSettings()">
+        <div class="modal-box glass" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn" onclick="closeSettings()">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="setting-row">
+                    <label>Performance Mode</label>
+                    <div class="toggle-btns">
+                        <button class="toggle-btn active" id="btn-fast" onclick="setMode('fast')">⚡ Fast</button>
+                        <button class="toggle-btn" id="btn-accurate" onclick="setMode('accurate')">🎯 Accurate</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <label>FPS Limit: <span id="fps-value">30</span></label>
+                    <input type="range" class="slider" id="fps-slider" min="10" max="60" value="30"
+                        oninput="updateFps(this.value)">
+                    <div class="slider-labels">
+                        <span>10</span>
+                        <span>30</span>
+                        <span>60</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal-overlay" id="image-modal" onclick="closeImageModal()">
+        <div class="modal-content glass" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeImageModal()">×</button>
+            <img id="modal-image" src="" alt="Capture Preview">
+            <div class="modal-info">
+                <div id="modal-timestamp"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

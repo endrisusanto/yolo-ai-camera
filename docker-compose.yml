@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  yolo-ai:
+    build: .
+    container_name: yolo-ai-container
+    ports:
+      - "2123:2123"
+    volumes:
+      - .:/app
+    devices:
+      - /dev/video0:/dev/video0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    restart: unless-stopped
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video

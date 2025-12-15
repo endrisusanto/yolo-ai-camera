@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VisionGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Side Menu Glassmorphism -->
+        <nav class="side-menu glass">
+            <a href="/" class="menu-item" title="Live Monitor">
+                <span class="menu-icon">📹</span>
+            </a>
+            <a href="/dashboard" class="menu-item active" title="Dashboard">
+                <span class="menu-icon">📊</span>
+            </a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header glass">
+                <div class="header-left">
+                    <div class="logo-icon">👁️</div>
+                    <h1>Dashboard</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon glass" onclick="toggleTheme()" id="theme-btn"
+                        title="Toggle Theme">🌙</button>
+                    <button class="btn-export glass" onclick="exportExcel()">📊 Export Excel</button>
+                    <button class="btn-refresh glass" onclick="refreshData()">🔄</button>
+                </div>
+            </header>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card glass">
+                    <div class="stat-icon">📱</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-alerts">0</div>
+                        <div class="stat-label">Phone Alerts</div>
+                    </div>
+                </div>
+
+                <div class="stat-card glass">
+                    <div class="stat-icon">🪑</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="total-sitting">0</div>
+                        <div class="stat-label">Sitting Sessions</div>
+                    </div>
+                </div>
+
+                <div class="stat-card glass">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="avg-duration">0s</div>
+                        <div class="stat-label">Avg Duration</div>
+                    </div>
+                </div>
+
+                <div class="stat-card glass">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="today-alerts">0</div>
+                        <div class="stat-label">Today's Alerts</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phone Alerts Table -->
+            <section class="table-section glass">
+                <div class="section-header">
+                    <h2>📱 Phone Usage Alerts</h2>
+                    <span class="badge" id="alerts-count">0</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-table">
+                            <tr>
+                                <td colspan="6" class="empty-state">No alerts yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sitting History Table -->
+            <section class="table-section glass">
+                <div class="section-header">
+                    <h2>🪑 Sitting History</h2>
+                    <span class="badge" id="sitting-count">0</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Person ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sitting-table">
+                            <tr>
+                                <td colspan="4" class="empty-state">No sitting history</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal-overlay" id="image-modal" onclick="closeModal()">
+        <div class="modal-content glass" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <img id="modal-image" src="" alt="Capture Preview">
+            <div class="modal-info">
+                <div id="modal-timestamp"></div>
+                <div id="modal-description"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+
+</html>

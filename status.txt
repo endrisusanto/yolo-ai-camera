@@ -1,0 +1,36 @@
+--- Docker PS ---
+CONTAINER ID   IMAGE                                          COMMAND                  CREATED         STATUS                    PORTS                                                                                                NAMES
+7b59e0869b60   yolo-ai-yolo-ai                                "python app.py"          5 minutes ago   Created                                                                                                                        yolo-ai-container
+53400f9aafdd   nextcloud                                      "/entrypoint.sh apac…"   12 hours ago    Up 12 hours               0.0.0.0:6578->80/tcp, [::]:6578->80/tcp                                                              b3f09d16fe0b_cloud-app-1
+b4d647117acc   redis:alpine                                   "docker-entrypoint.s…"   12 hours ago    Up 12 hours               6379/tcp                                                                                             cloud-redis-1
+4503e05608a1   mariadb:10.6                                   "docker-entrypoint.s…"   16 hours ago    Up 16 hours               3306/tcp                                                                                             cloud-db-1
+dbf867143588   yolo-frontend                                  "docker-entrypoint.s…"   2 days ago      Up 2 days                 0.0.0.0:5173->5173/tcp, [::]:5173->5173/tcp                                                          yolo-frontend-1
+cc9a6441200b   yolo-backend                                   "uvicorn main:app --…"   2 days ago      Up 2 days                 0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                                                          yolo-backend-1
+3fb6ac353efe   postgres:15-alpine                             "docker-entrypoint.s…"   2 days ago      Up 2 days                 0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp                                                          yolo-db-1
+2c9ac6d4a798   dompetkeluarga-app                             "/docker-entrypoint.…"   4 days ago      Up 3 days                 0.0.0.0:1212->80/tcp, [::]:1212->80/tcp                                                              dompetkeluarga-app-1
+cb4103544ecf   dompetkeluarga-server                          "docker-entrypoint.s…"   4 days ago      Up 3 days                 0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp                                                          dompetkeluarga-server-1
+46ee0fb0516d   lscr.io/linuxserver/speedtest-tracker:latest   "/init"                  5 days ago      Up 3 days                 0.0.0.0:8080->80/tcp, [::]:8080->80/tcp, 0.0.0.0:8443->443/tcp, [::]:8443->443/tcp                   speedtest-tracker
+914cb72b120e   speedtest-tracker-8.4/app                      "start-container"        5 days ago      Created                                                                                                                        speedtest-tracker-laravel.test-1
+011fae894d3e   postgres:17-alpine                             "docker-entrypoint.s…"   5 days ago      Created                                                                                                                        speedtest-tracker-pgsql-1
+32a24f367e13   caronc/apprise:latest                          "/opt/apprise/webapp…"   5 days ago      Exited (255) 5 days ago   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                                                          speedtest-tracker-apprise-1
+1ff22b2ca7ea   axllent/mailpit:latest                         "/mailpit"               5 days ago      Exited (255) 5 days ago   0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp, 0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp, 1110/tcp   speedtest-tracker-mailpit-1
+d0fda3412a8b   qris-donation-generator-qris-app               "/docker-entrypoint.…"   5 days ago      Up 3 days                 0.0.0.0:5656->80/tcp, [::]:5656->80/tcp                                                              qris-donation-generator-qris-app-1
+1c59cf263fb9   qr-data-processor-scanner-frontend             "/docker-entrypoint.…"   5 days ago      Up 3 days                 0.0.0.0:8008->80/tcp, [::]:8008->80/tcp                                                              qr-data-processor-scanner-frontend-1
+d2b95c52ed72   qr-data-processor-scanner-backend              "docker-entrypoint.s…"   5 days ago      Up 3 days                 3000/tcp                                                                                             qr-data-processor-scanner-backend-1
+9af221572d14   dhl-express-tracker-app                        "docker-php-entrypoi…"   5 days ago      Up 3 days                 9000/tcp, 0.0.0.0:8800->80/tcp, [::]:8800->80/tcp                                                    dhl-tracker-app
+47633eb7d9d9   mariadb:10.6                                   "docker-entrypoint.s…"   5 days ago      Up 3 days                 3306/tcp                                                                                             dhl-tracker-db
+b394d3be9a9a   streamflow-app                                 "docker-entrypoint.s…"   5 days ago      Up 3 days                 0.0.0.0:7575->7575/tcp, [::]:7575->7575/tcp                                                          streamflow-app
+c9c234e0c623   ucapan-app                                     "docker-entrypoint.s…"   5 days ago      Created                                                                                                                        raya-app
+2b32a3eb3dbe   postgres:15-alpine                             "docker-entrypoint.s…"   5 days ago      Up 3 days                 0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp                                                          dompetkeluarga-db-1
+acd291898d5c   tailscale/tailscale:latest                     "/usr/local/bin/cont…"   5 days ago      Created                                                                                                                        tailscaled
+92ed57006ef0   mongo:latest                                   "docker-entrypoint.s…"   5 days ago      Up 3 days                 27017/tcp                                                                                            qr-data-processor-scanner-db-1
+6b44fcee7792   qris-qris-app                                  "/docker-entrypoint.…"   5 days ago      Up 3 days                 0.0.0.0:6699->80/tcp, [::]:6699->80/tcp                                                              qris-generator
+a48186f89383   docker.n8n.io/n8nio/n8n                        "tini -- /docker-ent…"   5 days ago      Exited (255) 5 days ago   0.0.0.0:5678->5678/tcp, [::]:5678->5678/tcp                                                          n8n-n8n-1
+--- Docker Logs ---
+--- Curl Check ---
+HTTP/1.1 200 OK
+Content-Type: text/html
+Date: Mon, 15 Dec 2025 01:22:26 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+

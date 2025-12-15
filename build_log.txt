@@ -1,0 +1,553 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  215.6kB
+Step 1/10 : FROM ultralytics/ultralytics:latest
+ ---> 428f59fd5d34
+Step 2/10 : WORKDIR /app
+ ---> Using cache
+ ---> eaaa47a34b36
+Step 3/10 : COPY requirements.txt .
+ ---> 9d30c7d3c4a5
+Step 4/10 : RUN pip install --no-cache-dir -r requirements.txt
+ ---> Running in 579c8e3fc6a4
+Requirement already satisfied: ultralytics in /opt/conda/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (8.3.237)
+Collecting flask (from -r requirements.txt (line 2))
+  Downloading flask-3.1.2-py3-none-any.whl.metadata (3.2 kB)
+Requirement already satisfied: opencv-python-headless in /opt/conda/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (4.11.0.86)
+Requirement already satisfied: numpy in /opt/conda/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.3.4)
+Requirement already satisfied: matplotlib>=3.3.0 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (3.10.8)
+Requirement already satisfied: pillow>=7.1.2 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (11.3.0)
+Requirement already satisfied: pyyaml>=5.3.1 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (6.0.3)
+Requirement already satisfied: requests>=2.23.0 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (2.32.5)
+Requirement already satisfied: scipy>=1.4.1 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (1.16.3)
+Requirement already satisfied: torch>=1.8.0 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (2.9.1+cu128)
+Requirement already satisfied: torchvision>=0.9.0 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (0.24.1+cu128)
+Requirement already satisfied: psutil>=5.8.0 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (7.1.3)
+Requirement already satisfied: polars>=0.20.0 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (1.36.1)
+Requirement already satisfied: ultralytics-thop>=2.0.18 in /opt/conda/lib/python3.11/site-packages (from ultralytics->-r requirements.txt (line 1)) (2.0.18)
+Collecting blinker>=1.9.0 (from flask->-r requirements.txt (line 2))
+  Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+Requirement already satisfied: click>=8.1.3 in /opt/conda/lib/python3.11/site-packages (from flask->-r requirements.txt (line 2)) (8.3.0)
+Collecting itsdangerous>=2.2.0 (from flask->-r requirements.txt (line 2))
+  Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+Requirement already satisfied: jinja2>=3.1.2 in /opt/conda/lib/python3.11/site-packages (from flask->-r requirements.txt (line 2)) (3.1.6)
+Requirement already satisfied: markupsafe>=2.1.1 in /opt/conda/lib/python3.11/site-packages (from flask->-r requirements.txt (line 2)) (3.0.3)
+Collecting werkzeug>=3.1.0 (from flask->-r requirements.txt (line 2))
+  Downloading werkzeug-3.1.4-py3-none-any.whl.metadata (4.0 kB)
+Requirement already satisfied: contourpy>=1.0.1 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (1.3.3)
+Requirement already satisfied: cycler>=0.10 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (4.61.1)
+Requirement already satisfied: kiwisolver>=1.3.1 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (1.4.9)
+Requirement already satisfied: packaging>=20.0 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (25.0)
+Requirement already satisfied: pyparsing>=3 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (3.2.5)
+Requirement already satisfied: python-dateutil>=2.7 in /opt/conda/lib/python3.11/site-packages (from matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (2.9.0.post0)
+Requirement already satisfied: polars-runtime-32==1.36.1 in /opt/conda/lib/python3.11/site-packages (from polars>=0.20.0->ultralytics->-r requirements.txt (line 1)) (1.36.1)
+Requirement already satisfied: six>=1.5 in /opt/conda/lib/python3.11/site-packages (from python-dateutil>=2.7->matplotlib>=3.3.0->ultralytics->-r requirements.txt (line 1)) (1.17.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in /opt/conda/lib/python3.11/site-packages (from requests>=2.23.0->ultralytics->-r requirements.txt (line 1)) (3.4.4)
+Requirement already satisfied: idna<4,>=2.5 in /opt/conda/lib/python3.11/site-packages (from requests>=2.23.0->ultralytics->-r requirements.txt (line 1)) (3.11)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/conda/lib/python3.11/site-packages (from requests>=2.23.0->ultralytics->-r requirements.txt (line 1)) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in /opt/conda/lib/python3.11/site-packages (from requests>=2.23.0->ultralytics->-r requirements.txt (line 1)) (2025.10.5)
+Requirement already satisfied: filelock in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (3.20.0)
+Requirement already satisfied: typing-extensions>=4.10.0 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (4.15.0)
+Requirement already satisfied: sympy>=1.13.3 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (1.14.0)
+Requirement already satisfied: networkx>=2.5.1 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (3.5)
+Requirement already satisfied: fsspec>=0.8.5 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (2025.10.0)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.8.93 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.8.93)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.8.90 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.8.90)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.8.90 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.8.90)
+Requirement already satisfied: nvidia-cudnn-cu12==9.10.2.21 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (9.10.2.21)
+Requirement already satisfied: nvidia-cublas-cu12==12.8.4.1 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.8.4.1)
+Requirement already satisfied: nvidia-cufft-cu12==11.3.3.83 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (11.3.3.83)
+Requirement already satisfied: nvidia-curand-cu12==10.3.9.90 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (10.3.9.90)
+Requirement already satisfied: nvidia-cusolver-cu12==11.7.3.90 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (11.7.3.90)
+Requirement already satisfied: nvidia-cusparse-cu12==12.5.8.93 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.5.8.93)
+Requirement already satisfied: nvidia-cusparselt-cu12==0.7.1 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (0.7.1)
+Requirement already satisfied: nvidia-nccl-cu12==2.27.5 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (2.27.5)
+Requirement already satisfied: nvidia-nvshmem-cu12==3.3.20 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (3.3.20)
+Requirement already satisfied: nvidia-nvtx-cu12==12.8.90 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.8.90)
+Requirement already satisfied: nvidia-nvjitlink-cu12==12.8.93 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (12.8.93)
+Requirement already satisfied: nvidia-cufile-cu12==1.13.1.3 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (1.13.1.3)
+Requirement already satisfied: triton==3.5.1 in /opt/conda/lib/python3.11/site-packages (from torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (3.5.1)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /opt/conda/lib/python3.11/site-packages (from sympy>=1.13.3->torch>=1.8.0->ultralytics->-r requirements.txt (line 1)) (1.3.0)
+Downloading flask-3.1.2-py3-none-any.whl (103 kB)
+Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Downloading werkzeug-3.1.4-py3-none-any.whl (224 kB)
+Installing collected packages: werkzeug, itsdangerous, blinker, flask
+
+Successfully installed blinker-1.9.0 flask-3.1.2 itsdangerous-2.2.0 werkzeug-3.1.4
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0m ---> Removed intermediate container 579c8e3fc6a4
+ ---> f78828311f49
+Step 5/10 : RUN wget https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n.pt
+ ---> Running in a8a1360399aa
+[91m--2025-12-15 01:33:45--  https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n.pt
+[0m[91mResolving github.com (github.com)... [0m[91m20.205.243.166
+Connecting to github.com (github.com)|20.205.243.166|:443... [0m[91mconnected.
+[0m[91mHTTP request sent, awaiting response... [0m[91m302 Found
+Location: https://release-assets.githubusercontent.com/github-production-release-asset/521807533/101dd207-c6a9-4ee0-bfeb-34e12d2b8f40?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-15T02%3A10%3A31Z&rscd=attachment%3B+filename%3Dyolov8n.pt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-15T01%3A09%3A32Z&ske=2025-12-15T02%3A10%3A31Z&sks=b&skv=2018-11-09&sig=5u4mzy%2BkrZfFxVYB%2BrOUFkgLDL2vbrNfMxR7FNCPLic%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NTc2MjczMywibmJmIjoxNzY1NzYyNDMzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.nIzhmdlQ321PK5QNq9EGumJiQDEZRshT_Hky2g2vgdM&response-content-disposition=attachment%3B%20filename%3Dyolov8n.pt&response-content-type=application%2Foctet-stream [following]
+--2025-12-15 01:33:54--  https://release-assets.githubusercontent.com/github-production-release-asset/521807533/101dd207-c6a9-4ee0-bfeb-34e12d2b8f40?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-15T02%3A10%3A31Z&rscd=attachment%3B+filename%3Dyolov8n.pt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-15T01%3A09%3A32Z&ske=2025-12-15T02%3A10%3A31Z&sks=b&skv=2018-11-09&sig=5u4mzy%2BkrZfFxVYB%2BrOUFkgLDL2vbrNfMxR7FNCPLic%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NTc2MjczMywibmJmIjoxNzY1NzYyNDMzLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.nIzhmdlQ321PK5QNq9EGumJiQDEZRshT_Hky2g2vgdM&response-content-disposition=attachment%3B%20filename%3Dyolov8n.pt&response-content-type=application%2Foctet-stream
+Resolving release-assets.githubusercontent.com (release-assets.githubusercontent.com)... [0m[91m185.199.109.133, 185.199.111.133, 185.199.108.133, ...
+Connecting to release-assets.githubusercontent.com (release-assets.githubusercontent.com)|185.199.109.133|:443... [0m[91mconnected.
+[0m[91mHTTP request sent, awaiting response... [0m[91m200 OK
+[0m[91mLength: 6549796 (6.2M) [application/octet-stream]
+[0m[91mSaving to: 'yolov8n.pt'
+
+     0K .[0m[91m...[0m[91m.[0m[91m.[0m[91m...[0m[91m.[0m[91m ...[0m[91m.[0m[91m.[0m[91m..... .......... [0m[91m.[0m[91m......... ..........  0% 14.3K 7m22s
+    50K .....[0m[91m..... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m.....  1% 84.5K 4m17s
+   100K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m.......  2% 71.9K 3m19s
+   150K .........[0m[91m. .......... .[0m[91m......... .......[0m[91m... ..........  3%  383K 2m32s
+   200K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... ..........  3%  306K 2m5s
+   250K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m.  4%  238K 1m47s
+   300K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m...  5%  142K 97s
+   350K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m.....  6%  148K 89s
+   400K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m.......  7%  131K 84s
+   450K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m.........  7%  152K 79s
+   500K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. ..........  8% 97.1K 76s
+   550K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......[0m[91m...  9% 60.0K 78s
+   600K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 10% 88.7K 76s
+   650K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 10%  187K 72s
+   700K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 11% 88.6K 71s
+   750K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 12% 45.5K 74s
+   800K .....[0m[91m..... .......... .......... .......... .......... 13% 15.8K 89s
+   850K ...[0m[91m....... .......... .......... .....[0m[91m..... .......... 14% 92.6K 87s
+   900K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 14% 76.5K 85s
+   950K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 15%  357K 81s
+  1000K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 16%  284K 77s
+  1050K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 17%  181K 75s
+  1100K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 17%  117K 73s
+  1150K .......[0m[91m... ........[0m[91m.. .......... ....[0m[91m...... .......... 18%  118K 71s[0m[91m
+  1200K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 19%  114K 69s
+  1250K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 20%  115K 67s
+  1300K ..........[0m[91m ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 21% 71.4K 67s
+  1350K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 21%  130K 65s
+  1400K ........[0m[91m.. ........[0m[91m.. .......... ....[0m[91m...... .......... 22%  258K 63s[0m[91m
+  1450K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... ..........[0m[91m 23%  231K 61s
+  1500K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 24%  194K 59s
+  1550K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 25%  238K 57s
+  1600K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 25%  210K 56s
+  1650K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 26%  329K 54s
+  1700K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 27%  156K 53s
+  1750K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 28%  221K 51s
+  1800K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 28%  147K 50s
+  1850K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 29%  385K 49s
+  1900K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 30%  263K 47s
+  1950K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 31%  410K 46s
+  2000K .......... ...[0m[91m....... ....[0m[91m...... ..........[0m[91m ........[0m[91m.. 32%  174K 45s
+  2050K ......[0m[91m.... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 32%  385K 44s
+  2100K ....[0m[91m...... ..[0m[91m........ ........[0m[91m.. ......[0m[91m.... ....[0m[91m...... 33%  595K 42s
+  2150K ......[0m[91m....[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 34%  736K 41s
+  2200K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 35%  803K 40s
+  2250K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......[0m[91m... 35%  674K 38s
+  2300K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 36% 2.67M 37s
+  2350K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 37% 1.02M 36s
+  2400K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 38% 1.16M 35s
+  2450K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 39% 2.21M 34s
+  2500K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......[0m[91m... 39% 2.29M 33s
+  2550K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 40% 1.10M 32s
+  2600K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 41% 2.04M 31s
+  2650K .[0m[91m........[0m[91m. .......... .....[0m[91m..... ..........[0m[91m .[0m[91m......... 42% 1.30M[0m[91m 30s
+  2700K .......[0m[91m... ..........[0m[91m ...[0m[91m....... .........[0m[91m. .......... 42%[0m[91m 2.30M 29s
+  2750K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 43% 3.34M[0m[91m 28s
+  2800K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... ...[0m[91m....... 44%[0m[91m 1.37M 27s
+  2850K .[0m[91m......... ....[0m[91m...[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 45%  966K 26s
+  2900K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 46% 1.01M 26s
+  2950K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 46% 1.99M 25s
+  3000K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....[0m[91m... 47%  394K 24s
+  3050K .......... ...[0m[91m....... .........[0m[91m. .......... .......... 48% 11.8M 24s
+  3100K .......... .[0m[91m......... .......... .......... ...[0m[91m....... 49%  297M 23s
+  3150K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 50%  665K 22s
+  3200K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 50% 1.22M 22s
+  3250K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 51%  777K 21s
+  3300K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 52%  512K 20s
+  3350K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 53%  657K 20s
+  3400K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 53%  644K 19s
+  3450K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 54%  683K 19s
+  3500K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 55%  545K 18s
+  3550K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 56%  925K 18s
+  3600K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 57% 1.16M 17s
+  3650K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 57%  736K 17s
+  3700K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 58%  691K 16s
+  3750K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 59%  257K 16s
+  3800K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 60%  965K 15s
+  3850K .......... ...[0m[91m.....[0m[91m.. .......... ....[0m[91m...... .......... 60% 1.73M 15s[0m[91m
+  3900K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 61%  438K 14s
+  3950K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 62%  384K 14s
+  4000K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 63%  511K 14s
+  4050K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 64%  567K 13s
+  4100K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 64%  784K 13s
+  4150K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 65%  607K 12s
+  4200K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 66%  456K 12s
+  4250K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 67%  212K 12s[0m[91m
+  4300K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 68%  303K 11s
+  4350K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 68% 47.8K 12s
+  4400K .......... ..[0m[91m........ ........[0m[91m.. .......... .......... 69%  236K 11s
+  4450K ..........[0m[91m .......... .......... .......... ..[0m[91m........ 70%  248M 11s
+  4500K .......... .......... ....[0m[91m...... ..........[0m[91m .......... 71%  309K 10s
+  4550K ......[0m[91m...[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 71%  266K 10s
+  4600K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 72%  245K 10s
+  4650K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 73%  325K 10s
+  4700K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 74%  608K 9s
+  4750K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 75%  441K 9s
+  4800K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 75%  431K 8s
+  4850K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 76% 1.99M 8s
+  4900K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 77%  185K 8s
+  4950K .......... .......... .......... .......... .[0m[91m......... 78%  162M 8s
+  5000K .......... .......... ...[0m[91m....... .........[0m[91m. .......... 78% 30.2M 7s
+  5050K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 79%  402K 7s
+  5100K ...[0m[91m....... .........[0m[91m. ..........[0m[91m .......... ......[0m[91m.... 80%  535K 7s
+  5150K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 81%  692K 6s
+  5200K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 82% 1.63M 6s
+  5250K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 82% 1.29M 6s
+  5300K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 83% 1.53M 5s
+  5350K ....[0m[91m...... ..........[0m[91m ..........[0m[91m .......... ......[0m[91m.... 84% 1.73M 5s
+  5400K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 85% 1.41M 5s
+  5450K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 85% 2.98M 4s
+  5500K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 86% 1.76M 4s
+  5550K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 87% 3.03M 4s
+  5600K ....[0m[91m...... ......[0m[91m....[0m[91m ..........[0m[91m .......... ......[0m[91m.... 88% 1.20M 4s
+  5650K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 89% 1.89M 3s
+  5700K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 89% 2.01M 3s
+  5750K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 90% 2.01M 3s
+  5800K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 91% 1.46M 3s
+  5850K ....[0m[91m...... ..........[0m[91m ..........[0m[91m .......... ......[0m[91m.... 92% 1.95M 2s
+  5900K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 93% 1.55M 2s
+  5950K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 93% 1.38M 2s
+  6000K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 94% 1.73M 2s
+  6050K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 95% 1.45M 1s
+  6100K ....[0m[91m...... ..........[0m[91m .......... .......... .......... 96%  624K 1s
+  6150K ..[0m[91m........ .......... .......... .......... .......... 96%  365M 1s[0m[91m
+  6200K .......... .......... .......... ..[0m[91m........ ........[0m[91m.. 97% 4.07M 1s
+  6250K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 98% 1.44M 0s
+  6300K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 99% 1.44M 0s
+  6350K ..........[0m[91m .......... ......[0m[91m.... .......... ......    100% 2.76M=28s
+
+[0m[91m2025-12-15 01:34:26 (229 KB/s) - 'yolov8n.pt' saved [6549796/6549796]
+
+[0m ---> Removed intermediate container a8a1360399aa
+ ---> 60155996b133
+Step 6/10 : RUN wget https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-seg.pt
+ ---> Running in aa31e8ebaa5a
+[91m--2025-12-15 01:34:35--  https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-seg.pt
+[0m[91mResolving github.com (github.com)... [0m[91m20.205.243.166
+Connecting to github.com (github.com)|20.205.243.166|:443... [0m[91mconnected.
+[0m[91mHTTP request sent, awaiting response... [0m[91m302 Found
+Location: https://release-assets.githubusercontent.com/github-production-release-asset/521807533/60ee1881-2be8-46aa-ac56-d27851e4081f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-15T02%3A16%3A34Z&rscd=attachment%3B+filename%3Dyolov8n-seg.pt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-15T01%3A15%3A55Z&ske=2025-12-15T02%3A16%3A34Z&sks=b&skv=2018-11-09&sig=jHRHcu4sNp8GImKOtCrqBAbjAuKFGBAIdO5%2FXuGkJbA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NTc2Mjc3NiwibmJmIjoxNzY1NzYyNDc2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1sRWh8d-06V9jtWlkSF9zY_1rfS2zmRVaGV0FBZfxA4&response-content-disposition=attachment%3B%20filename%3Dyolov8n-seg.pt&response-content-type=application%2Foctet-stream [following]
+--2025-12-15 01:34:36--  https://release-assets.githubusercontent.com/github-production-release-asset/521807533/60ee1881-2be8-46aa-ac56-d27851e4081f?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-15T02%3A16%3A34Z&rscd=attachment%3B+filename%3Dyolov8n-seg.pt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-15T01%3A15%3A55Z&ske=2025-12-15T02%3A16%3A34Z&sks=b&skv=2018-11-09&sig=jHRHcu4sNp8GImKOtCrqBAbjAuKFGBAIdO5%2FXuGkJbA%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NTc2Mjc3NiwibmJmIjoxNzY1NzYyNDc2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.1sRWh8d-06V9jtWlkSF9zY_1rfS2zmRVaGV0FBZfxA4&response-content-disposition=attachment%3B%20filename%3Dyolov8n-seg.pt&response-content-type=application%2Foctet-stream
+Resolving release-assets.githubusercontent.com (release-assets.githubusercontent.com)... [0m[91m185.199.111.133, 185.199.108.133, 185.199.109.133, ...
+Connecting to release-assets.githubusercontent.com (release-assets.githubusercontent.com)|185.199.111.133|:443... [0m[91mconnected.
+[0m[91mHTTP request sent, awaiting response... [0m[91m200 OK
+[0m[91mLength: 7071756 (6.7M) [application/octet-stream]
+[0m[91mSaving to: 'yolov8n-seg.pt'
+[0m[91m
+     0K .[0m[91m.[0m[91m..[0m[91m....[0m[91m.[0m[91m.[0m[91m ...[0m[91m.[0m[91m.[0m[91m..... .......... .[0m[91m......... .......[0m[91m...  0%  964K 7s
+    50K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m.....  1% 1.45M 6s
+   100K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m.......  2% 1.30M 6s
+   150K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m.........  2% 1.91M 5s
+   200K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. ..........  3% 1.88M 5s
+   250K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... ..........  4% 1.51M 5s
+   300K ...[0m[91m....... .........[0m[91m. .......... .......... ..........  5% 1.16M 5s
+   350K .......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m.  5% 3.09M 4s
+   400K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m...  6% 1.36M 4s
+   450K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m.....  7%  759K 5s
+   500K .......... .[0m[91m......... .......... .......... ...[0m[91m.......  7% 3.06M 4s
+   550K .........[0m[91m. .......... .....[0m[91m..... ........[0m[91m.. ..........  8% 1.62M 4s
+   600K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... ..........  9% 1.44M 4s
+   650K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 10% 1.44M 4s[0m[91m
+   700K .......... ......[0m[91m.... .......... ..[0m[91m........[0m[91m ........[0m[91m.. 10% 1.22M 4s
+   750K ......[0m[91m.... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 11% 1.52M 4s
+   800K .......... ..[0m[91m........ ........[0m[91m.. .......... [0m[91m....[0m[91m...... 12% 1.63M 4s
+   850K ..[0m[91m........[0m[91m ........[0m[91m.. ......[0m[91m.... .......... ..[0m[91m........ 13% 1.74M 4s
+   900K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m ........[0m[91m.. 13% 1.63M 4s
+   950K ......[0m[91m.... ....[0m[91m...... ..[0m[91m........ ........[0m[91m.. .......... 14% 1.52M 4s
+  1000K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 15% 1.54M 4s
+  1050K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 15% 1.88M 4s[0m[91m
+  1100K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 16% 1.35M 4s
+  1150K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 17% 1.63M 4s
+  1200K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 18% 1.74M 4s
+  1250K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 18% 1.74M 4s
+  1300K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 19% 1.28M 4s
+  1350K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 20% 1.88M 4s
+  1400K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 20% 1.87M 4s
+  1450K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 21% 1.89M 3s[0m[91m
+  1500K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 22% 1.19M 3s
+  1550K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 23% 1.19M 3s
+  1600K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 23% 1.52M 3s
+  1650K ..[0m[91m........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 24% 1.65M 3s
+  1700K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 25% 2.03M 3s
+  1750K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 26% 2.19M 3s
+  1800K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 26% 1.76M 3s
+  1850K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 27% 2.21M 3s[0m[91m
+  1900K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 28% 1.62M 3s
+  1950K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 28% 2.03M 3s
+  2000K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 29% 1.63M 3s
+  2050K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 30% 1.29M 3s
+  2100K ........[0m[91m.. .......... ...[0m[91m.[0m[91m...... .......... .......... 31% 1.35M 3s
+  2150K .......... .......... ..[0m[91m........ ........[0m[91m.. .......... 31% 3.52M 3s
+  2200K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 32% 1.22M 3s
+  2250K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 33% 1.10M 3s[0m[91m
+  2300K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 34% 1005K 3s
+  2350K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 34% 1000K 3s
+  2400K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 35% 1.43M 3s
+  2450K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 36% 1.74M 3s
+  2500K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 36% 1.74M 3s
+  2550K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 37% 1.87M 3s
+  2600K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 38% 1.76M 3s
+  2650K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 39% 1.62M 3s[0m[91m
+  2700K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 39% 1.23M 3s
+  2750K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 40% 1.53M 3s
+  2800K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 41% 1.72M 3s
+  2850K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 41% 1.73M 3s
+  2900K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 42% 1.16M 3s
+  2950K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 43%  937K 3s
+  3000K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 44% 1.21M 3s
+  3050K ..[0m[91m........ ........[0m[91m.. ......[0m[91m.... ....[0m[91m...... .......... 44%  302K 3s[0m[91m
+  3100K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 45%  325K 3s
+  3150K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 46% 1.63M 3s
+  3200K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 47%  198K 3s
+  3250K ..........[0m[91m .......... .......... .......... ..[0m[91m........ 47%  138K 3s
+  3300K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 48%  417K 3s
+  3350K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 49%  210K 3s
+  3400K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 49%  299K 3s
+  3450K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 50%  444K 4s[0m[91m
+  3500K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 51%  263K 4s
+  3550K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 52%  462K 4s
+  3600K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 52%  640K 4s
+  3650K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 53%  321K 4s
+  3700K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 54%  463K 4s
+  3750K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 55%  400K 4s
+  3800K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 55%  309K 4s
+  3850K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 56%  249K 4s[0m[91m
+  3900K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 57%  214K 4s
+  3950K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 57%  291K 4s
+  4000K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 58%  569K 4s
+  4050K ..[0m[91m........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 59%  817K 4s
+  4100K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 60%  673K 4s
+  4150K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 60% 1006K 3s
+  4200K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 61%  712K 3s
+  4250K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 62%  506K 3s[0m[91m
+  4300K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 62%  410K 3s
+  4350K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 63%  202K 3s
+  4400K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 64%  217K 3s
+  4450K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 65%  321K 3s
+  4500K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 65%  756K 3s
+  4550K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 66%  694K 3s
+  4600K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 67%  423K 3s
+  4650K [0m[91m..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 68%  403K 3s[0m[91m
+  4700K .......... .......... .......... .......... ........[0m[91m.. 68%  255K 3s
+  4750K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 69%  162K 3s
+  4800K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 70%  329K 3s
+  4850K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 70%  265K 3s
+  4900K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 71%  702K 3s
+  4950K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 72%  481K 3s
+  5000K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 73%  544K 3s
+  5050K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 73%  830K 3s[0m[91m
+  5100K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 74%  250K 3s
+  5150K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 75%  609K 3s
+  5200K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 76% 1.17M 3s
+  5250K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 76% 1.27M 3s
+  5300K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 77% 1.18M 2s
+  5350K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 78% 1.32M 2s
+  5400K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 78% 1.53M 2s
+  5450K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 79% 1.28M 2s[0m[91m
+  5500K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 80%  821K 2s
+  5550K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 81% 1.50M 2s
+  5600K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 81%  564K 2s
+  5650K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 82%  787K 2s
+  5700K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 83% 1.21M 2s
+  5750K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 83% 1.52M 2s
+  5800K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 84%  965K 2s
+  5850K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 85% 1.05M 2s[0m[91m
+  5900K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 86%  755K 1s
+  5950K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 86% 1.38M 1s
+  6000K .......... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 87% 1.62M 1s
+  6050K ..........[0m[91m .......... ......[0m[91m.... .......... ..[0m[91m........ 88%  757K 1s
+  6100K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 89%  660K 1s
+  6150K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 89% 1.05M 1s
+  6200K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... ..........[0m[91m 90%  700K 1s
+  6250K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 91% 1.17M 1s[0m[91m
+  6300K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 91% 1.40M 1s
+  6350K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 92%  927K 1s
+  6400K .......... ..[0m[91m........ .......... .......... .......... 93%  332K 1s
+  6450K .......... .......... ......[0m[91m.... .......... ..[0m[91m........ 94%  429K 1s
+  6500K ........[0m[91m.. .......... ....[0m[91m...... ..........[0m[91m .......... 94%  291K 1s
+  6550K ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. .......... 95%  359K 0s
+  6600K ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... .......... 96%  446K 0s
+  6650K ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... .......... 97%  311K 0s[0m[91m
+  6700K .......... ......[0m[91m.... .......... ..[0m[91m........ ........[0m[91m.. 97%  284K 0s
+  6750K .......... ....[0m[91m...... ..........[0m[91m .......... ......[0m[91m.... 98%[0m[91m  332K 0s
+  6800K ....[0m[91m...... ..[0m[91m........ ........[0m[91m.. .......... ....[0m[91m...... 99%[0m[91m  868K 0s
+  6850K ..[0m[91m........[0m[91m .......... .....[0m[91m.[0m[91m.... .......... ..[0m[91m........ 99% 2.20M 0s
+  6900K ......[0m[91m              [0m[91m             [0m[91m          [0m[91m           100%  621M[0m[91m=11s
+
+[0m[91m2025-12-15 01:34:47 (652 KB/s) - 'yolov8n-seg.pt' saved [7071756/7071756]
+
+[0m ---> Removed intermediate container aa31e8ebaa5a
+ ---> c43dc4202916
+Step 7/10 : RUN wget https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-pose.pt
+ ---> Running in 1ec4d1745cc4
+[91m--2025-12-15 01:34:56--  https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-pose.pt
+[0m[91mResolving github.com (github.com)... [0m[91m20.205.243.166
+Connecting to github.com (github.com)|20.205.243.166|:443... [0m[91mconnected.
+[0m[91mHTTP request sent, awaiting response... [0m[91m302 Found
+Location: https://release-assets.githubusercontent.com/github-production-release-asset/521807533/805e7bb4-ce31-48ec-b345-b94e7e30e567?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-15T02%3A13%3A57Z&rscd=attachment%3B+filename%3Dyolov8n-pose.pt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-15T01%3A13%3A52Z&ske=2025-12-15T02%3A13%3A57Z&sks=b&skv=2018-11-09&sig=XlldSDztD7zECX3lSl6ojoh8wIaWM9SVDqAZH1mnJjg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NTc2Mjc5NiwibmJmIjoxNzY1NzYyNDk2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Uu6X9wxXeqqa4bkFHMaoce9m6EjFuJVCLS2uuApFZs0&response-content-disposition=attachment%3B%20filename%3Dyolov8n-pose.pt&response-content-type=application%2Foctet-stream [following]
+--2025-12-15 01:34:56--  https://release-assets.githubusercontent.com/github-production-release-asset/521807533/805e7bb4-ce31-48ec-b345-b94e7e30e567?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-12-15T02%3A13%3A57Z&rscd=attachment%3B+filename%3Dyolov8n-pose.pt&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-12-15T01%3A13%3A52Z&ske=2025-12-15T02%3A13%3A57Z&sks=b&skv=2018-11-09&sig=XlldSDztD7zECX3lSl6ojoh8wIaWM9SVDqAZH1mnJjg%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc2NTc2Mjc5NiwibmJmIjoxNzY1NzYyNDk2LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.Uu6X9wxXeqqa4bkFHMaoce9m6EjFuJVCLS2uuApFZs0&response-content-disposition=attachment%3B%20filename%3Dyolov8n-pose.pt&response-content-type=application%2Foctet-stream
+Resolving release-assets.githubusercontent.com (release-assets.githubusercontent.com)... [0m[91m185.199.108.133, 185.199.111.133, 185.199.110.133, ...
+Connecting to release-assets.githubusercontent.com (release-assets.githubusercontent.com)|185.199.108.133|:443... [0m[91mconnected.
+[0m[91mHTTP request sent, awaiting response... [0m[91m200 OK
+[0m[91mLength: 6832633 (6.5M) [application/octet-stream]
+[0m[91mSaving to: 'yolov8n-pose.pt'
+[0m[91m
+     0K .[0m[91m...[0m[91m.[0m[91m.[0m[91m..[0m[91m.[0m[91m.[0m[91m ..[0m[91m.[0m[91m..[0m[91m..... .......... .[0m[91m......... .......[0m[91m...  0% 1.37M 5s
+    50K .......... ...[0m[91m....... .[0m[91m........[0m[91m. .......... .....[0m[91m.....  1% 2.63M 4s
+   100K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m.......  2% 2.07M 3s
+   150K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m.........  2% 1.90M 3s
+   200K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... ..........  3% 1.75M 3s
+   250K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... ..........  4% 4.07M 3s
+   300K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m.  5% 1.01M 3s
+   350K .......... .....[0m[91m..... ...[0m[91m....... .[0m[91m........[0m[91m. .......[0m[91m...  5% 3.56M 3s
+   400K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m.....  6% 2.63M 3s
+   450K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m.......  7% 4.95M 3s
+   500K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m.........  8% 2.42M 3s
+   550K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. ..........  8% 1.45M 3s
+   600K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... ..........  9% 3.38M 3s
+   650K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 10% 4.75M 3s
+   700K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 11% 2.48M 3s
+   750K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 11% 1.13M 3s
+   800K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 12% 1.44M 3s
+   850K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 13% 2.35M 3s
+   900K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 14% 3.67M 3s
+   950K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 14% 4.07M 3s
+  1000K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 15% 5.40M 2s
+  1050K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 16% 1.40M 3s
+  1100K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 17% 1.60M 3s
+  1150K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 17% 2.09M 3s
+  1200K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 18% 4.62M 2s
+  1250K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 19% 4.76M 2s
+  1300K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 20% 2.46M 2s
+  1350K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 20% 1013K 2s
+  1400K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 21% 2.38M 2s
+  1450K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 22% 1.90M 2s
+  1500K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 23% 2.66M 2s
+  1550K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 23% 2.01M 2s
+  1600K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 24% 3.25M 2s
+  1650K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 25% 2.43M 2s
+  1700K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 26% 3.38M 2s
+  1750K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 26% 1.79M 2s
+  1800K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 27% 3.37M 2s
+  1850K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 28% 2.76M 2s
+  1900K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 29% 1.05M 2s
+  1950K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 29%  714K 2s
+  2000K .......... .......... .........[0m[91m. .......... .....[0m[91m..... 30%  315M 2s
+  2050K .......... .[0m[91m........[0m[91m. .......[0m[91m... .....[0m[91m..... ...[0m[91m....... 31%  351M 2s
+  2100K .[0m[91m........[0m[91m. .......... .......... .......... .........[0m[91m. 32%  322M 2s
+  2150K .......[0m[91m... .....[0m[91m..... ...[0m[91m....... .[0m[91m........[0m[91m. .......... 32% 34.0M 2s
+  2200K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 33% 2.42M 2s
+  2250K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 34% 1.65M 2s
+  2300K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 35% 1.97M 2s
+  2350K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 35% 5.26M 2s
+  2400K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 36% 1.73M 2s
+  2450K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 37% 1.67M 2s
+  2500K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 38% 2.66M 2s
+  2550K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 38% 1.43M 2s
+  2600K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 39% 2.39M 2s
+  2650K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 40% 1.94M 2s
+  2700K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 41% 1.20M 2s
+  2750K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 41% 1.62M 2s
+  2800K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 42% 4.93M 2s
+  2850K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 43%  657K 2s
+  2900K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 44%  969K 2s
+  2950K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 44% 1006K 2s
+  3000K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 45% 3.01M 2s
+  3050K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 46% 1.89M 2s
+  3100K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 47% 1.33M 2s
+  3150K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 47% 2.84M 2s
+  3200K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 48% 2.03M 2s
+  3250K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 49% 1.84M 2s
+  3300K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 50% 2.41M 2s
+  3350K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 50% 3.66M 2s
+  3400K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 51% 2.61M 2s
+  3450K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 52% 2.48M 2s
+  3500K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 53% 1.38M 2s
+  3550K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 53% 1.84M 1s
+  3600K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 54% 1.42M 1s
+  3650K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 55% 4.09M 1s
+  3700K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 56% 1.02M 1s
+  3750K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 56% 2.40M 1s
+  3800K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 57% 2.83M 1s
+  3850K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 58% 2.62M 1s
+  3900K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 59%  455K 1s
+  3950K .......... .......... .......... .......... .......... 59%  430M 1s
+  4000K .....[0m[91m..... .......... .[0m[91m........[0m[91m. .......[0m[91m... .....[0m[91m..... 60%  617M 1s
+  4050K .......... .......... .......... .......... .......... 61%  608M 1s
+  4100K .........[0m[91m. .......[0m[91m... .....[0m[91m..... .......... .[0m[91m......... 62% 5.26M 1s
+  4150K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 62% 2.19M 1s
+  4200K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 63% 2.27M 1s
+  4250K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 64% 6.14M 1s
+  4300K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 65% 1.61M 1s
+  4350K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 65% 3.33M 1s
+  4400K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 66% 2.28M 1s
+  4450K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 67% 3.08M 1s
+  4500K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 68% 2.74M 1s
+  4550K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 68% 2.65M 1s
+  4600K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 69% 3.32M 1s
+  4650K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 70% 3.03M 1s
+  4700K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 71%  855K 1s
+  4750K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 71% 2.84M 1s
+  4800K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 72% 2.04M 1s
+  4850K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 73% 3.46M 1s
+  4900K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 74% 2.51M 1s
+  4950K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 74% 2.24M 1s
+  5000K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 75% 2.67M 1s
+  5050K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 76% 4.67M 1s
+  5100K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 77% 1.43M 1s
+  5150K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 77% 1.39M 1s
+  5200K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 78% 1.28M 1s
+  5250K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 79% 3.88M 1s
+  5300K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 80% 2.76M 1s
+  5350K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 80% 1.86M 1s
+  5400K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 81% 2.28M 1s
+  5450K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 82% 2.73M 1s
+  5500K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 83% 1.53M 1s
+  5550K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 83% 4.50M 1s
+  5600K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 84% 1.89M 0s
+  5650K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 85% 4.17M 0s
+  5700K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 86% 1.26M 0s
+  5750K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 86% 3.58M 0s
+  5800K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 87% 2.70M 0s
+  5850K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 88% 4.83M 0s
+  5900K .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. 89% 1.91M 0s
+  5950K .......... .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... 89% 3.91M 0s
+  6000K .......... ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... 90% 2.32M 0s
+  6050K ...[0m[91m....... .[0m[91m......... .......[0m[91m... .....[0m[91m..... ...[0m[91m....... 91% 3.49M 0s
+  6100K .[0m[91m........[0m[91m. .......[0m[91m... .....[0m[91m..... .......... .[0m[91m......... 92% 3.03M 0s
+  6150K ..[0m[91m.....[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 92% 1.68M 0s
+  6200K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 93% 1.38M 0s
+  6250K ...[0m[91m....... .........[0m[91m. .......... .....[0m[91m..... .......... 94%  586K 0s
+  6300K .[0m[91m......... .......[0m[91m... .......... .......... .........[0m[91m. 95% 3.39M 0s
+  6350K .......... .......... .......... .[0m[91m......... .......... 95% 1.35M 0s
+  6400K .......... ...[0m[91m....... .[0m[91m........[0m[91m. .......... .....[0m[91m..... 96% 4.76M 0s
+  6450K .......... .[0m[91m......... .......[0m[91m... .......... ...[0m[91m....... 97%  970K 0s
+  6500K .........[0m[91m. .......... .....[0m[91m..... .......... .[0m[91m......... 98% 4.02M 0s
+  6550K .......[0m[91m... .......... ...[0m[91m....... .........[0m[91m. .......... 98% 2.32M 0s
+  6600K .....[0m[91m..... .......... .[0m[91m......... .......[0m[91m... .......... 99%  722K 0s
+  6650K ...[0m[91m....... .........[0m[91m. ..                              [0m[91m100%  363K=3.3s
+
+[0m[91m2025-12-15 01:35:00 (1.99 MB/s) - 'yolov8n-pose.pt' saved [6832633/6832633]
+
+[0m ---> Removed intermediate container 1ec4d1745cc4
+ ---> 1e45e4ce6a5b
+Step 8/10 : COPY . .
+ ---> ed12bf9d835c
+Step 9/10 : EXPOSE 9090
+ ---> Running in db5764620024
+ ---> Removed intermediate container db5764620024
+ ---> fc624632d717
+Step 10/10 : CMD ["python", "app.py"]
+ ---> Running in c9f17b39dd9f
+ ---> Removed intermediate container c9f17b39dd9f
+ ---> 7e6aeb93d5ff
+Successfully built 7e6aeb93d5ff
+Successfully tagged yolo-ai:latest
