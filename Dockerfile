@@ -2,6 +2,15 @@ FROM ultralytics/ultralytics:latest
 
 WORKDIR /app
 
+# Install system dependencies for dlib (cmake, build tools)
+RUN apt-get update && apt-get install -y \
+    cmake \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Remove broken pip cmake if exists and ensure system cmake is used
+RUN pip uninstall -y cmake || true
+
 # Install Flask and other dependencies
 # Ultralytics image already has torch, torchvision, opencv, etc.
 COPY requirements.txt .

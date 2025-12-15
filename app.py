@@ -11,13 +11,16 @@ import numpy as np
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 import io
+import face_recognition
 
 app = Flask(__name__)
 
 # Configuration
 CAPTURE_FOLDER = 'static/captures'
+FACES_FOLDER = 'faces'
 DATABASE_FILE = 'visionguard.db'
 os.makedirs(CAPTURE_FOLDER, exist_ok=True)
+os.makedirs(FACES_FOLDER, exist_ok=True)
 
 # Initialize Database
 def init_db():
@@ -62,6 +65,47 @@ TZ = pytz.timezone('Asia/Jakarta')
 model_seg_n = YOLO('yolov8n-seg.pt')
 model_pose_n = YOLO('yolov8n-pose.pt')
 
+# Face Recognition - Load known faces
+known_face_encodings = []
+known_face_names = []
+
+def load_known_faces():
+    """Load face encodings from faces folder"""
+    global known_face_encodings, known_face_names
+    
+    known_face_encodings = []
+    known_face_names = []
+    
+    if not os.path.exists(FACES_FOLDER):
+        print(f"Faces folder not found: {FACES_FOLDER}")
+        return
+    
+    for filename in os.listdir(FACES_FOLDER):
+        if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+            filepath = os.path.join(FACES_FOLDER, filename)
+            try:
+                # Load image
+                image = face_recognition.load_image_file(filepath)
+                # Get face encoding
+                encodings = face_recognition.face_encodings(image)
+                
+                if len(encodings) > 0:
+                    # Use first face found
+                    known_face_encodings.append(encodings[0])
+                    # Use filename without extension as name
+                    name = os.path.splitext(filename)[0]
+                    known_face_names.append(name)
+                    print(f"Loaded face: {name}")
+                else:
+                    print(f"No face found in: {filename}")
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
+    
+    print(f"Total faces loaded: {len(known_face_names)}")
+
+# Load known faces on startup
+load_known_faces()
+
 # Global state
 settings = {
     "fps_limit": 30,
@@ -72,11 +116,13 @@ settings = {
 current_fps = 0
 captures = []
 sitting_sessions = {}
-sitting_history = []  # For dashboard statistics
+sitting_history = []
 last_capture_time = 0
 CAPTURE_COOLDOWN = 3.0
 SITTING_PERSIST_TIME = 10.0
 next_person_id = 0
+recognized_faces = {}  # Store recognized faces with their names
+
 
 camera = cv2.VideoCapture(0)
 
@@ -305,11 +351,14 @@ def generate_frames():
         
         conf = settings["conf_threshold"]
         
-        results_seg = model_seg_n(frame, conf=conf, verbose=False, imgsz=640)
-        results_pose = model_pose_n(frame, conf=conf, verbose=False, imgsz=640)
+        # Optimized YOLO inference - smaller resolution (416 instead of 640)
+        # Use half precision if available for faster inference
+        results_seg = model_seg_n(frame, conf=conf, verbose=False, imgsz=416, half=True)
+        results_pose = model_pose_n(frame, conf=conf, verbose=False, imgsz=416, half=True)
         
-        annotated_frame = results_seg[0].plot(line_width=2, font_size=1)
-        pose_overlay = results_pose[0].plot(line_width=2, font_size=1)
+        # Faster plotting with reduced line width
+        annotated_frame = results_seg[0].plot(line_width=1, font_size=0.5)
+        pose_overlay = results_pose[0].plot(line_width=1, font_size=0.5)
         annotated_frame = cv2.addWeighted(annotated_frame, 0.7, pose_overlay, 0.3, 0)
         
         chairs_boxes = []
@@ -368,6 +417,52 @@ def generate_frames():
                 if len(captures) > 100:
                     captures.pop()
                 last_capture_time = current_time
+        
+        # Face Recognition - Optimized (run every 3 frames)
+        frame_count = getattr(generate_frames, 'frame_count', 0)
+        frame_count += 1
+        generate_frames.frame_count = frame_count
+        
+        if len(known_face_encodings) > 0 and frame_count % 3 == 0:
+            # Convert BGR to RGB for face_recognition
+            rgb_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+            
+            # Resize frame more aggressively for faster processing (25% size)
+            small_frame = cv2.resize(rgb_frame, (0, 0), fx=0.25, fy=0.25)
+            
+            # Find faces in frame (use faster HOG model)
+            face_locations = face_recognition.face_locations(small_frame, model="hog")
+            
+            # Only get encodings if faces found
+            if len(face_locations) > 0:
+                face_encodings = face_recognition.face_encodings(small_frame, face_locations)
+                
+                # Process each face
+                for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+                    # Scale back up face locations (4x because 25% resize)
+                    top *= 4
+                    right *= 4
+                    bottom *= 4
+                    left *= 4
+                    
+                    # Compare with known faces
+                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding, tolerance=0.6)
+                    name = "Unknown"
+                    
+                    # Use the known face with smallest distance
+                    face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                    if len(face_distances) > 0:
+                        best_match_index = np.argmin(face_distances)
+                        if matches[best_match_index]:
+                            name = known_face_names[best_match_index]
+                    
+                    # Draw rectangle around face
+                    cv2.rectangle(annotated_frame, (left, top), (right, bottom), (0, 255, 0), 2)
+                    
+                    # Draw name label
+                    cv2.rectangle(annotated_frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+                    cv2.putText(annotated_frame, name, (left + 6, bottom - 6), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
         
         current_time = time.time()
         active_person_ids = set()
@@ -448,7 +543,8 @@ def generate_frames():
         if loop_time > 0:
             current_fps = int(1.0 / loop_time)
 
-        ret, buffer = cv2.imencode('.jpg', annotated_frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+        # Faster JPEG encoding with lower quality (70 instead of 85)
+        ret, buffer = cv2.imencode('.jpg', annotated_frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
         frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')

@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project Specific
+visionguard.db
+visionguard.db-journal
+static/captures/*.jpg
+static/captures/*.jpeg
+static/captures/*.png
+
+# YOLO Models (optional - comment out if you want to commit them)
+# *.pt
+
+# Logs
+*.log
+logs/
+*.txt
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
+# Face images (keep folder structure but not the images)
+faces/*.jpg
+faces/*.jpeg
+faces/*.png
+!faces/.gitkeep
+
+# Build artifacts
+build_*.log
+*.pyc
