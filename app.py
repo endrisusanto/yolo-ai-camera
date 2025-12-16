@@ -110,16 +110,18 @@ load_known_faces()
 settings = {
     "fps_limit": 60,
     "mode": "fast",
-    "conf_threshold": 0.25
+    "conf_threshold": 0.25,
+    "low_light_mode": False
 }
 
 current_fps = 0
 captures = []
-sitting_sessions = {}
+captures = []
+person_sessions = {}
 sitting_history = []
 last_capture_time = 0
 CAPTURE_COOLDOWN = 3.0
-SITTING_PERSIST_TIME = 10.0
+SITTING_PERSIST_TIME = 1.0
 next_person_id = 0
 recognized_faces = {}  # Store recognized faces with their names
 
@@ -198,20 +200,47 @@ def get_person_bbox(keypoints):
     
     return [x_min, y_min, x_max, y_max]
 
-def match_person_to_session(bbox, current_time):
-    """Match current person to existing session using IoU"""
+def match_person_to_session(bbox, current_time, active_ids):
+    """Match current person to existing session using IoU and Distance"""
     global next_person_id
     
     best_match_id = None
     best_iou = 0.0
+    min_dist = float('inf')
     
-    for person_id, session in sitting_sessions.items():
+    # Calculate centroid of current person
+    cx = (bbox[0] + bbox[2]) / 2
+    cy = (bbox[1] + bbox[3]) / 2
+    
+    # First pass: IoU
+    for person_id, session in person_sessions.items():
+        if person_id in active_ids:
+            continue
+            
         if 'bbox' in session:
             iou = calculate_iou(bbox, session['bbox'])
             if iou > best_iou and iou > 0.3:
                 best_iou = iou
                 best_match_id = person_id
     
+    # Second pass: Distance (if no IoU match)
+    if best_match_id is None:
+        for person_id, session in person_sessions.items():
+            if person_id in active_ids:
+                continue
+                
+            if 'bbox' in session:
+                s_bbox = session['bbox']
+                s_cx = (s_bbox[0] + s_bbox[2]) / 2
+                s_cy = (s_bbox[1] + s_bbox[3]) / 2
+                
+                dist = math.sqrt((cx - s_cx)**2 + (cy - s_cy)**2)
+                
+                # Match if within 200 pixels
+                if dist < 200 and dist < min_dist:
+                    min_dist = dist
+                    best_match_id = person_id
+
     if best_match_id is None:
         best_match_id = next_person_id
         next_person_id += 1
@@ -294,23 +323,14 @@ def check_sitting_advanced(keypoints, chairs_boxes):
     if sitting_score >= 2:
         # If pose strongly suggests sitting, we don't strictly need a chair
         return "Sitting", knee_angle
-    elif sitting_score >= 1:
-        # If pose is ambiguous, check for chair
-        if hip_x > 0 and hip_y > 0:
-            for chair_box in chairs_boxes:
-                x1, y1, x2, y2 = chair_box
-                margin = 60
-                if (x1 - margin <= hip_x <= x2 + margin and 
-                    y1 - margin <= hip_y <= y2 + margin):
-                    return "Sitting", knee_angle
     
     return "Standing", 0
 
-def draw_timer_card(frame, x, y, timer_text):
+def draw_timer_card(frame, x, y, timer_text, status="SITTING"):
     """Draw glassmorphism timer card"""
     padding = 20
     text_size = cv2.getTextSize(timer_text, cv2.FONT_HERSHEY_SIMPLEX, 0.9, 2)[0]
-    label_size = cv2.getTextSize("SITTING", cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
+    label_size = cv2.getTextSize(status, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
     
     card_width = max(text_size[0], label_size[0]) + padding * 2
     card_height = 70
@@ -336,13 +356,17 @@ def draw_timer_card(frame, x, y, timer_text):
     alpha = 0.75
     cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
     
+    # Color based on status
+    # Orange for Sitting, Blue for Standing
+    color = (255, 149, 0) if status == "SITTING" else (0, 149, 255)
+    
     cv2.rectangle(frame,
                  (card_x, card_y),
                  (card_x + card_width, card_y + 4),
-                 (255, 149, 0), -1)
+                 color, -1)
     
     label_x = card_x + (card_width - label_size[0]) // 2
-    cv2.putText(frame, "SITTING", 
+    cv2.putText(frame, status, 
                (label_x, card_y + 25),
                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (150, 150, 150), 1)
     
@@ -352,7 +376,7 @@ def draw_timer_card(frame, x, y, timer_text):
                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
 
 def generate_frames():
-    global current_fps, last_capture_time, sitting_sessions, sitting_history
+    global current_fps, last_capture_time, person_sessions, sitting_history
     
     prev_time = time.time()
     
@@ -370,8 +394,9 @@ def generate_frames():
             
         prev_time = time.time()
         
-        # Apply low light enhancement
-        frame = apply_low_light_enhancement(frame)
+        # Apply low light enhancement if enabled
+        if settings.get("low_light_mode", False):
+            frame = apply_low_light_enhancement(frame)
         
         conf = settings["conf_threshold"]
         
@@ -534,32 +559,42 @@ def generate_frames():
                 kps_np = kps.cpu().numpy()
                 status, angle = check_sitting_advanced(kps_np, chairs_boxes)
                 
-                if status == "Sitting":
-                    head_x, head_y = int(kps_np[0][0]), int(kps_np[0][1])
+                # Track both Sitting and Standing
+                head_x, head_y = int(kps_np[0][0]), int(kps_np[0][1])
+                
+                if head_x > 0 and head_y > 0:
+                    bbox = get_person_bbox(kps_np)
                     
-                    if head_x > 0 and head_y > 0:
-                        bbox = get_person_bbox(kps_np)
+                    if bbox is not None:
+                        person_id = match_person_to_session(bbox, current_time, active_person_ids)
+                        active_person_ids.add(person_id)
                         
-                        if bbox is not None:
-                            person_id = match_person_to_session(bbox, current_time)
-                            active_person_ids.add(person_id)
+                        if person_id not in person_sessions:
+                            person_sessions[person_id] = {
+                                "start_time": current_time,
+                                "last_seen": current_time,
+                                "head_pos": (head_x, head_y),
+                                "bbox": bbox,
+                                "status": status
+                            }
+                        else:
+                            # Check if status changed
+                            old_status = person_sessions[person_id].get("status", "Standing")
+                            if old_status != status:
+                                # Status changed, reset timer
+                                person_sessions[person_id]["start_time"] = current_time
+                                person_sessions[person_id]["status"] = status
                             
-                            if person_id not in sitting_sessions:
-                                sitting_sessions[person_id] = {
-                                    "start_time": current_time,
-                                    "last_seen": current_time,
-                                    "head_pos": (head_x, head_y),
-                                    "bbox": bbox
-                                }
-                            else:
-                                sitting_sessions[person_id]["last_seen"] = current_time
-                                sitting_sessions[person_id]["head_pos"] = (head_x, head_y)
-                                sitting_sessions[person_id]["bbox"] = bbox
+                            person_sessions[person_id]["last_seen"] = current_time
+                            person_sessions[person_id]["head_pos"] = (head_x, head_y)
+                            person_sessions[person_id]["bbox"] = bbox
         
-        for person_id, session in list(sitting_sessions.items()):
+        for person_id, session in list(person_sessions.items()):
             time_since_seen = current_time - session["last_seen"]
+            status = session.get("status", "Standing")
             
-            if time_since_seen < SITTING_PERSIST_TIME:
+            # Only draw if seen very recently (prevents ghosting/double timers)
+            if time_since_seen < 0.5:
                 duration = int(current_time - session["start_time"])
                 minutes = duration // 60
                 seconds = duration % 60
@@ -567,37 +602,42 @@ def generate_frames():
                 timer_text = f"{minutes}m {seconds}s" if minutes > 0 else f"{seconds}s"
                 head_x, head_y = session["head_pos"]
                 
-                draw_timer_card(annotated_frame, head_x, head_y, timer_text)
-            elif time_since_seen >= SITTING_PERSIST_TIME and person_id not in [s.get('person_id') for s in sitting_history]:
-                # Save to history and database when session ends
-                duration = int(session["last_seen"] - session["start_time"])
-                if duration >= 5:  # Only save if sat for at least 5 seconds
-                    local_time = get_local_time()
-                    timestamp_display = local_time.strftime("%H:%M:%S")
-                    date_display = local_time.strftime("%Y-%m-%d")
-                    
-                    # Save to database
-                    conn = sqlite3.connect(DATABASE_FILE)
-                    cursor = conn.cursor()
-                    cursor.execute('''
-                        INSERT INTO sitting_sessions (person_id, duration, timestamp, date)
-                        VALUES (?, ?, ?, ?)
-                    ''', (person_id, duration, timestamp_display, date_display))
-                    conn.commit()
-                    conn.close()
-                    
-                    # Also keep in memory
-                    sitting_history.insert(0, {
-                        "person_id": person_id,
-                        "duration": duration,
-                        "timestamp": timestamp_display,
-                        "date": date_display
-                    })
-                    if len(sitting_history) > 50:
-                        sitting_history.pop()
+                # Draw timer for both Sitting and Standing
+                draw_timer_card(annotated_frame, head_x, head_y, timer_text, status.upper())
+                
+            # Check for session end (for saving to DB)
+            if time_since_seen >= SITTING_PERSIST_TIME:
+                # Only save SITTING sessions to history/DB
+                if status == "Sitting" and person_id not in [s.get('person_id') for s in sitting_history]:
+                    duration = int(session["last_seen"] - session["start_time"])
+                    if duration >= 5:  # Only save if sat for at least 5 seconds
+                        local_time = get_local_time()
+                        timestamp_display = local_time.strftime("%H:%M:%S")
+                        date_display = local_time.strftime("%Y-%m-%d")
+                        
+                        # Save to database
+                        conn = sqlite3.connect(DATABASE_FILE)
+                        cursor = conn.cursor()
+                        cursor.execute('''
+                            INSERT INTO sitting_sessions (person_id, duration, timestamp, date)
+                            VALUES (?, ?, ?, ?)
+                        ''', (person_id, duration, timestamp_display, date_display))
+                        conn.commit()
+                        conn.close()
+                        
+                        # Also keep in memory
+                        sitting_history.insert(0, {
+                            "person_id": person_id,
+                            "duration": duration,
+                            "timestamp": timestamp_display,
+                            "date": date_display
+                        })
+                        if len(sitting_history) > 50:
+                            sitting_history.pop()
         
-        sitting_sessions = {
-            pid: session for pid, session in sitting_sessions.items()
+        # Clean up old sessions
+        person_sessions = {
+            pid: session for pid, session in person_sessions.items()
             if current_time - session["last_seen"] < SITTING_PERSIST_TIME
         }
         
@@ -629,7 +669,7 @@ def get_stats():
         "fps": current_fps,
         "capture_count": len(captures),
         "captures": captures[:10],
-        "sitting_count": len(sitting_sessions)
+        "sitting_count": len([s for s in person_sessions.values() if s.get('status') == 'Sitting'])
     })
 
 @app.route('/api/dashboard/stats')
@@ -691,7 +731,7 @@ def get_dashboard_stats():
         "avg_sitting_duration": avg_sitting_duration,
         "today_alerts": today_alerts,
         "today_sitting": today_sitting,
-        "current_sitting": len(sitting_sessions),
+        "current_sitting": len([s for s in person_sessions.values() if s.get('status') == 'Sitting']),
         "captures": alerts,
         "sitting_history": sitting
     })
@@ -766,6 +806,8 @@ def update_settings():
     if 'mode' in data:
         settings['mode'] = data['mode']
         settings['conf_threshold'] = 0.35 if data['mode'] == 'accurate' else 0.25
+    if 'low_light_mode' in data:
+        settings['low_light_mode'] = bool(data['low_light_mode'])
     return jsonify({"status": "success", "settings": settings})
 
 @app.route('/api/reset_db', methods=['POST'])
@@ -789,9 +831,9 @@ def reset_db():
                 print(f'Failed to delete {file_path}. Reason: {e}')
                 
         # Clear in-memory lists
-        global captures, sitting_sessions, sitting_history
+        global captures, person_sessions, sitting_history
         captures = []
-        sitting_sessions = {}
+        person_sessions = {}
         sitting_history = []
         
         return jsonify({"status": "success", "message": "Database and captures reset successfully"})

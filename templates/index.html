@@ -116,6 +116,15 @@
 
             <div class="modal-body">
                 <div class="setting-row">
+                    <label>Camera Mode</label>
+                    <div class="toggle-btns">
+                        <button class="toggle-btn active" id="btn-original"
+                            onclick="setCameraMode(false)">Original</button>
+                        <button class="toggle-btn" id="btn-lowlight" onclick="setCameraMode(true)">🌙 Low Light</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
                     <label>Performance Mode</label>
                     <div class="toggle-btns">
                         <button class="toggle-btn active" id="btn-fast" onclick="setMode('fast')">⚡ Fast</button>
@@ -124,8 +133,8 @@
                 </div>
 
                 <div class="setting-row">
-                    <label>FPS Limit: <span id="fps-value">30</span></label>
-                    <input type="range" class="slider" id="fps-slider" min="10" max="60" value="30"
+                    <label>FPS Limit: <span id="fps-value">60</span></label>
+                    <input type="range" class="slider" id="fps-slider" min="10" max="60" value="60"
                         oninput="updateFps(this.value)">
                     <div class="slider-labels">
                         <span>10</span>

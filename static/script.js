@@ -28,6 +28,27 @@ function setMode(mode) {
     });
 }
 
+function setCameraMode(isLowLight) {
+    const btnOriginal = document.getElementById('btn-original');
+    const btnLowLight = document.getElementById('btn-lowlight');
+
+    if (isLowLight) {
+        btnOriginal.classList.remove('active');
+        btnLowLight.classList.add('active');
+    } else {
+        btnLowLight.classList.remove('active');
+        btnOriginal.classList.add('active');
+    }
+
+    fetch('/api/settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ low_light_mode: isLowLight }),
+    });
+}
+
 function toggleTheme() {
     const body = document.body;
     const btn = document.getElementById('theme-btn');
