@@ -326,6 +326,31 @@ def check_sitting_advanced(keypoints, chairs_boxes):
     
     return "Standing", 0
 
+def check_phone_in_hand(keypoints, phone_boxes):
+    """Check if phone is near wrists (simulating Phone-Hand class)"""
+    if len(keypoints) < 17:
+        return False
+        
+    l_wrist = keypoints[9][:2]
+    r_wrist = keypoints[10][:2]
+    
+    for box in phone_boxes:
+        x1, y1, x2, y2 = box
+        # Expand box slightly for wrist tolerance
+        margin = 40
+        
+        # Check Left Wrist
+        if l_wrist[0] > 0:
+            if (x1 - margin <= l_wrist[0] <= x2 + margin) and (y1 - margin <= l_wrist[1] <= y2 + margin):
+                return True
+                
+        # Check Right Wrist
+        if r_wrist[0] > 0:
+            if (x1 - margin <= r_wrist[0] <= x2 + margin) and (y1 - margin <= r_wrist[1] <= y2 + margin):
+                return True
+                
+    return False
+
 def draw_timer_card(frame, x, y, timer_text, status="SITTING"):
     """Draw glassmorphism timer card"""
     padding = 20
@@ -411,6 +436,7 @@ def generate_frames():
         annotated_frame = cv2.addWeighted(annotated_frame, 0.7, pose_overlay, 0.3, 0)
         
         chairs_boxes = []
+        phone_boxes = []
         phone_detected = False
         
         # Expanded detection details
@@ -427,6 +453,7 @@ def generate_frames():
                     chairs_boxes.append(xyxy)
                 elif cls_id == 67:
                     phone_detected = True
+                    phone_boxes.append(xyxy)
                     detected_objects.append("Phone")
                 elif cls_id == 63:
                     detected_objects.append("Laptop")
@@ -434,62 +461,6 @@ def generate_frames():
                     detected_objects.append("Cup")
                 elif cls_id == 73:
                     detected_objects.append("Book")
-        
-        # Check for head down pose (increased sensitivity)
-        head_down_detected = False
-        
-        if results_pose[0].keypoints is not None:
-            for kps in results_pose[0].keypoints.data:
-                kps_np = kps.cpu().numpy()
-                if check_head_down(kps_np):
-                    head_down_detected = True
-                    break
-        
-        # Capture logic: Phone detected OR Head down (Suspected)
-        if head_down_detected:
-            current_time = time.time()
-            if current_time - last_capture_time > CAPTURE_COOLDOWN:
-                local_time = get_local_time()
-                timestamp_file = local_time.strftime("%Y%m%d_%H%M%S")
-                timestamp_display = local_time.strftime("%H:%M:%S")
-                date_display = local_time.strftime("%Y-%m-%d")
-                
-                filename = f"capture_{timestamp_file}.jpg"
-                filepath = os.path.join(CAPTURE_FOLDER, filename)
-                cv2.imwrite(filepath, annotated_frame)
-                
-                # Determine alert type
-                alert_type = "Phone Usage" if phone_detected else "Suspected Phone Use"
-                description = "Person detected using phone" if phone_detected else "Head down pose detected (Suspected phone use)"
-                
-                # Add context about other objects
-                if detected_objects:
-                    unique_objs = list(set([o for o in detected_objects if o != "Phone"]))
-                    if unique_objs:
-                        description += f" near {', '.join(unique_objs)}"
-                
-                # Save to database
-                conn = sqlite3.connect(DATABASE_FILE)
-                cursor = conn.cursor()
-                cursor.execute('''
-                    INSERT INTO phone_alerts (filename, timestamp, date, type, description)
-                    VALUES (?, ?, ?, ?, ?)
-                ''', (filename, timestamp_display, date_display, alert_type, description))
-                conn.commit()
-                conn.close()
-                
-                # Also keep in memory for quick access
-                captures.insert(0, {
-                    "id": len(captures) + 1,
-                    "filename": filename,
-                    "timestamp": timestamp_display,
-                    "date": date_display,
-                    "type": alert_type,
-                    "description": description
-                })
-                if len(captures) > 100:
-                    captures.pop()
-                last_capture_time = current_time
         
         # Face Recognition - Optimized (run every 3 frames)
         frame_count = getattr(generate_frames, 'frame_count', 0)
@@ -553,6 +524,7 @@ def generate_frames():
         
         current_time = time.time()
         active_person_ids = set()
+        trigger_capture = False
         
         if results_pose[0].keypoints is not None:
             for idx, kps in enumerate(results_pose[0].keypoints.data):
@@ -566,6 +538,39 @@ def generate_frames():
                     bbox = get_person_bbox(kps_np)
                     
                     if bbox is not None:
+                        # Check for phone usage (Head Down OR Phone Object Nearby OR Phone in Hand)
+                        is_head_down = check_head_down(kps_np)
+                        is_holding_phone = check_phone_in_hand(kps_np, phone_boxes)
+                        has_phone_nearby = False
+                        
+                        # Check overlap with any detected phone (if not already confirmed holding)
+                        if not is_holding_phone:
+                            for phone_box in phone_boxes:
+                                if calculate_iou(bbox, phone_box) > 0.01: # Any overlap
+                                    has_phone_nearby = True
+                                    break
+                        
+                        # Draw Red Box if Phone Usage Detected
+                        if is_head_down or has_phone_nearby or is_holding_phone:
+                            x1, y1, x2, y2 = map(int, bbox)
+                            # Red Box
+                            cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 0, 255), 3)
+                            
+                            # Label
+                            if is_holding_phone:
+                                label = "PHONE IN HAND"
+                            elif has_phone_nearby:
+                                label = "PHONE DETECTED"
+                            else:
+                                label = "SUSPECTED PHONE"
+                                
+                            label_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
+                            cv2.rectangle(annotated_frame, (x1, y1 - 30), (x1 + label_size[0] + 10, y1), (0, 0, 255), -1)
+                            cv2.putText(annotated_frame, label, (x1 + 5, y1 - 8), 
+                                      cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                            
+                            trigger_capture = True
+
                         person_id = match_person_to_session(bbox, current_time, active_person_ids)
                         active_person_ids.add(person_id)
                         
@@ -589,6 +594,59 @@ def generate_frames():
                             person_sessions[person_id]["head_pos"] = (head_x, head_y)
                             person_sessions[person_id]["bbox"] = bbox
         
+        # Capture logic: Triggered if Red Box was drawn (Phone or Head Down)
+        if trigger_capture:
+            current_time = time.time()
+            if current_time - last_capture_time > CAPTURE_COOLDOWN:
+                local_time = get_local_time()
+                timestamp_file = local_time.strftime("%Y%m%d_%H%M%S")
+                timestamp_display = local_time.strftime("%H:%M:%S")
+                date_display = local_time.strftime("%Y-%m-%d")
+                
+                filename = f"capture_{timestamp_file}.jpg"
+                filepath = os.path.join(CAPTURE_FOLDER, filename)
+                cv2.imwrite(filepath, annotated_frame)
+                
+                # Determine alert type
+                if is_holding_phone:
+                    alert_type = "Phone in Hand"
+                    description = "Person detected holding phone"
+                elif phone_detected:
+                    alert_type = "Phone Usage"
+                    description = "Person detected using phone"
+                else:
+                    alert_type = "Suspected Phone Use"
+                    description = "Head down pose detected (Suspected phone use)"
+                
+                # Add context about other objects
+                if detected_objects:
+                    unique_objs = list(set([o for o in detected_objects if o != "Phone"]))
+                    if unique_objs:
+                        description += f" near {', '.join(unique_objs)}"
+                
+                # Save to database
+                conn = sqlite3.connect(DATABASE_FILE)
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO phone_alerts (filename, timestamp, date, type, description)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (filename, timestamp_display, date_display, alert_type, description))
+                conn.commit()
+                conn.close()
+                
+                # Also keep in memory for quick access
+                captures.insert(0, {
+                    "id": len(captures) + 1,
+                    "filename": filename,
+                    "timestamp": timestamp_display,
+                    "date": date_display,
+                    "type": alert_type,
+                    "description": description
+                })
+                if len(captures) > 100:
+                    captures.pop()
+                last_capture_time = current_time
+
         for person_id, session in list(person_sessions.items()):
             time_since_seen = current_time - session["last_seen"]
             status = session.get("status", "Standing")
